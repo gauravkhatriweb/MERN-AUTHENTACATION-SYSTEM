@@ -132,7 +132,7 @@ export const verifyOtp = async (req, res) => {
         user.verifyOtpExpiry = null;
         user.isAccountVerified = true;
         await user.save();
-        res.status(200).json({message: 'OTP verified successfully'});
+        res.status(200).json({message: 'Account verified successfully'});
     } catch (error) {
         res.status(500).json({message: 'Internal server error'});
     }
@@ -152,4 +152,61 @@ export const isAuthenticated =  async (req,res)=>{
         })
     }
 
+}
+
+export const sendRestPasswordOtp = async (req, res) => {
+    try {
+        const user = await UserModel.findOne({_id: req.userId});
+        if(!user){
+            return res.status(400).json({message: 'User does not exist'});
+        }
+        if(!user.isAccountVerified){
+            return res.status(400).json({message: 'User is not verified'});
+        }
+        const otp = Math.floor(100000 + Math.random() * 900000);
+        user.forgotPasswordOtp = otp;
+        user.forgotPasswordOtpExpiry = Date.now() + 10 * 60 * 1000;
+        await user.save();
+        await sendEmail(user.email, 'Reset Password OTP', `Your OTP is ${otp}`);
+        res.status(200).json({message: 'OTP sent successfully'});
+    } catch (error) {
+        res.status(500).json({message: 'Internal server error'});
+    }
+}
+export const resetPassword = async (req, res) => {
+    try {
+        const {otp, newPassword} = req.body;
+        if(!otp){
+            return res.status(400).json({message: 'OTP is required'});
+        }
+        const user = await UserModel.findOne({_id: req.userId});
+        if(!user){
+            return res.status(400).json({message: 'User does not exist'});
+        }
+        if(user.forgotPasswordOtp !== otp){
+            return res.status(400).json({message: 'Invalid OTP'});
+        }
+        if(user.forgotPasswordOtpExpiry < Date.now()){
+            return res.status(400).json({message: 'OTP expired'});
+        }
+        if(!newPassword){
+            return res.status(400).json({message: 'New password is required'});
+        }
+        if(newPassword.length < 6){
+            return res.status(400).json({message: 'New password must be at least 6 characters'});
+        }
+        const isSamePassword = await bcrypt.compare(newPassword, user.password);
+        if(isSamePassword){
+            return res.status(400).json({message: 'New password must be different from old password'});
+        }
+        user.password = await bcrypt.hash(newPassword, 10);
+        user.forgotPasswordOtpExpiry = null;
+        user.forgotPasswordOtp = null;
+
+        
+        await user.save();
+        res.status(200).json({message: 'Password reset successfully'});
+    } catch (error) {
+        res.status(500).json({message: 'Internal server error'});
+    }
 }
