@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser';
 import mongoose from 'mongoose';
 import conntectDB from './config/mongoDB.js';
 import authRouter from './routes/authRoutes.js';
+import userRouter from './routes/userRoute.js';
 const app = express();
 const port = process.env.PORT || 4000;
 
@@ -18,6 +19,7 @@ app.get('/',(req,res)=>{
   res.send('API WORKING!');
 })
 app.use('/api/auth', authRouter);
+app.use('/api/user', userRouter);
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
