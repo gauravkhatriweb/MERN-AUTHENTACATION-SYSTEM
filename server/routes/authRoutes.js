@@ -1,9 +1,10 @@
 import express from 'express';
 import { register, login, logout, verifyOtp, sendVerificationOtp } from '../controllers/authController.js';
+import userAuth from '../middlewares/userAuth.js';
 const authRouter = express.Router();
 authRouter.post('/register', register);
 authRouter.post('/login', login);
 authRouter.post('/logout', logout);
-authRouter.post('/send-verification-otp', sendVerificationOtp);
-authRouter.post('/verify-otp', verifyOtp);
+authRouter.post('/send-verification-otp', userAuth, sendVerificationOtp);
+authRouter.post('/verify-otp', userAuth, verifyOtp);
 export default authRouter;

@@ -93,14 +93,7 @@ export const logout = async (req, res) => {
 // Send Verification Otp Email to User
 export const sendVerificationOtp = async (req, res) => {
     try {
-        if (!req.body || typeof req.body !== 'object') {
-            return res.status(400).json({ message: 'Invalid request format' });
-        }
-        const {email} = req.body;
-        if(!email){
-            return res.status(400).json({message: 'All fields are required'});
-        }
-        const user = await UserModel.findOne({email});
+        const user = await UserModel.findOne({_id: req.userId});    
         if(!user){
             return res.status(400).json({message: 'User does not exist'});
         }
@@ -122,11 +115,11 @@ export const sendVerificationOtp = async (req, res) => {
 // Verify Otp
 export const verifyOtp = async (req, res) => {
     try {
-        const {email, otp} = req.body;
-        if(!email || !otp){
-            return res.status(400).json({message: 'All fields are required'});
+        const {otp} = req.body;
+        if(!otp){
+            return res.status(400).json({message: 'OTP is required'});
         }
-        const user = await UserModel.findOne({email});
+        const user = await UserModel.findOne({_id: req.userId});
         if(!user){
             return res.status(400).json({message: 'User does not exist'});
         }
