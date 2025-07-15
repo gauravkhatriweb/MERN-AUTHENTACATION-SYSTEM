@@ -14,6 +14,9 @@ export const register = async (req, res) => {
         if(userExists){
             return res.status(400).json({message: 'User already exists'});
         }
+        if(password.length < 6){
+            return res.status(400).json({message: 'Password must be at least 6 characters'});
+        }
         const user = await UserModel.create({
             name,
             email,  
@@ -29,7 +32,7 @@ export const register = async (req, res) => {
             sameSite: 'none',
             secure: false,
         });
-        res.status(200).json({user, token});
+        res.status(200).json({'Registration Successful': user.email});
     } catch (error) {   
         res.status(500).json({message: 'Internal server error'});
     }
@@ -45,7 +48,7 @@ export const login = async (req, res) => {
         if(!user){
             return res.status(400).json({message: 'User does not exist'});
         }
-        const isMatch = await bcrypt.compare(password, UserModel.password);
+        const isMatch = await bcrypt.compare(password, user.password);
         if(!isMatch){
             return res.status(400).json({message: 'Invalid credentials'});
         }
@@ -59,7 +62,7 @@ export const login = async (req, res) => {
             sameSite: 'none',
             secure: false,
         });
-        res.status(200).json({user, token});
+        res.status(200).json({'Login Successful': user.email});
     } catch (error) {   
         res.status(500).json({message: 'Internal server error'});
     }
@@ -67,6 +70,10 @@ export const login = async (req, res) => {
 
 export const logout = async (req, res) => {
     try {
+        const token = req.cookies.token;
+        if(!token){
+            return res.status(400).json({message: 'User not logged in'});
+        }
         res.clearCookie('token', {
             httpOnly: true,
             maxAge: 0,
