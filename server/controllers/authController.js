@@ -2,6 +2,8 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import UserModel from '../models/userModel.js';
 import dotenv from 'dotenv';
+import sendEmail from '../config/emailService.js';
+
 dotenv.config();
 
 export const register = async (req, res) => {
@@ -32,7 +34,9 @@ export const register = async (req, res) => {
             sameSite: 'none',
             secure: false,
         });
-        res.status(200).json({'Registration Successful': user.email});
+        await sendEmail(user.email, 'Registration Successful', `You have successfully registered on MERN Authentication System ${user.name}`);
+
+        res.status(200).json({'Registration Successful and Email Sent': user.email});
     } catch (error) {   
         res.status(500).json({message: 'Internal server error'});
     }
