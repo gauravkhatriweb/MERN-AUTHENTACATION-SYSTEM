@@ -3,7 +3,6 @@ import jwt from 'jsonwebtoken';
 import UserModel from '../models/userModel.js';
 import dotenv from 'dotenv';
 import sendEmail from '../config/emailService.js';
-
 dotenv.config();
 
 export const register = async (req, res) => {
@@ -137,4 +136,20 @@ export const verifyOtp = async (req, res) => {
     } catch (error) {
         res.status(500).json({message: 'Internal server error'});
     }
+}
+
+export const isAuthenticated =  async (req,res)=>{
+    try{
+        return res.json({
+            success: true,
+            message: 'User is Authenticated',
+        })
+
+    }catch(error){
+        return res.json({
+            success: false,
+            message: 'User is not Authenticated',
+        })
+    }
+
 }
