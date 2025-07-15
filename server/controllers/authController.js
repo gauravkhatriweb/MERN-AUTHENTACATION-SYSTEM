@@ -89,3 +89,59 @@ export const logout = async (req, res) => {
         res.status(500).json({message: 'Internal server error'});
     }
 }
+
+// Send Verification Otp Email to User
+export const sendVerificationOtp = async (req, res) => {
+    try {
+        if (!req.body || typeof req.body !== 'object') {
+            return res.status(400).json({ message: 'Invalid request format' });
+        }
+        const {email} = req.body;
+        if(!email){
+            return res.status(400).json({message: 'All fields are required'});
+        }
+        const user = await UserModel.findOne({email});
+        if(!user){
+            return res.status(400).json({message: 'User does not exist'});
+        }
+        if(user.isAccountVerified){
+            return res.status(400).json({message: 'User is already verified'});
+
+        }
+        const otp = Math.floor(100000 + Math.random() * 900000);
+        user.verifyOtp = otp;
+        user.verifyOtpExpiry = Date.now() + 10 * 60 * 1000;
+        await user.save();
+        await sendEmail(user.email, 'Verification OTP', `Your OTP is ${otp}`);
+        res.status(200).json({message: 'OTP sent successfully'});
+    } catch (error) {
+        res.status(500).json({message: 'Internal server error'});
+    }
+}
+
+// Verify Otp
+export const verifyOtp = async (req, res) => {
+    try {
+        const {email, otp} = req.body;
+        if(!email || !otp){
+            return res.status(400).json({message: 'All fields are required'});
+        }
+        const user = await UserModel.findOne({email});
+        if(!user){
+            return res.status(400).json({message: 'User does not exist'});
+        }
+        if(user.verifyOtp !== otp){
+            return res.status(400).json({message: 'Invalid OTP'});
+        }
+        if(user.verifyOtpExpiry < Date.now()){
+            return res.status(400).json({message: 'OTP expired'});
+        }
+        user.verifyOtp = null;
+        user.verifyOtpExpiry = null;
+        user.isAccountVerified = true;
+        await user.save();
+        res.status(200).json({message: 'OTP verified successfully'});
+    } catch (error) {
+        res.status(500).json({message: 'Internal server error'});
+    }
+}
