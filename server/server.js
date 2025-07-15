@@ -1,25 +1,36 @@
+// Import required packages
 import express from 'express';
 import cors from 'cors';
 import 'dotenv/config';
 import cookieParser from 'cookie-parser';
-import mongoose from 'mongoose';
-import conntectDB from './config/mongoDB.js';
+
+// Import local modules
+import connectDB from './config/mongoDB.js';
 import authRouter from './routes/authRoutes.js';
 import userRouter from './routes/userRoute.js';
+
+// Initialize express application
 const app = express();
 const port = process.env.PORT || 4000;
 
-conntectDB(); 
+// Connect to MongoDB database
+connectDB(); 
 
-app.use(express.json());
-app.use(cors({credentials:true}));
-app.use(cookieParser());
-// API ENDPOINT
-app.get('/',(req,res)=>{
+// Middleware Setup
+app.use(express.json()); // Parse JSON request bodies
+app.use(cors({credentials: true})); // Enable CORS with credentials
+app.use(cookieParser()); // Parse Cookie header and populate req.cookies
+
+// Health check endpoint
+app.get('/', (req, res) => {
   res.send('API WORKING!');
-})
-app.use('/api/auth', authRouter);
-app.use('/api/user', userRouter);
+});
+
+// Route Handlers
+app.use('/api/auth', authRouter); // Authentication routes
+app.use('/api/user', userRouter); // User management routes
+
+// Start the server
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
