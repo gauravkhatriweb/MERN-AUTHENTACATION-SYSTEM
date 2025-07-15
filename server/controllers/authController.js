@@ -156,7 +156,11 @@ export const isAuthenticated =  async (req,res)=>{
 
 export const sendRestPasswordOtp = async (req, res) => {
     try {
-        const user = await UserModel.findOne({_id: req.userId});
+        const { email } = req.body;
+        if(!email) {
+            return res.status(400).json({message: 'Email is required'});
+        }
+        const user = await UserModel.findOne({ email });
         if(!user){
             return res.status(400).json({message: 'User does not exist'});
         }
@@ -175,11 +179,11 @@ export const sendRestPasswordOtp = async (req, res) => {
 }
 export const resetPassword = async (req, res) => {
     try {
-        const {otp, newPassword} = req.body;
-        if(!otp){
-            return res.status(400).json({message: 'OTP is required'});
+        const {email, otp, newPassword} = req.body;
+        if(!email || !otp || !newPassword){
+            return res.status(400).json({message: 'Email, OTP and new password are required'});
         }
-        const user = await UserModel.findOne({_id: req.userId});
+        const user = await UserModel.findOne({email});
         if(!user){
             return res.status(400).json({message: 'User does not exist'});
         }
