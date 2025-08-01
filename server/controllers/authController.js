@@ -89,7 +89,17 @@ export const register = async (req, res) => {
         await sendEmail(
             user.email,
             'Registration Successful',
-            `Welcome to MERN Authentication System, ${user.name}! Your registration was successful.`
+            `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 5px;">
+                <h2 style="color: #333; text-align: center;">Welcome to MERN Authentication System!</h2>
+                <p style="color: #666;">Hello ${user.name},</p>
+                <p style="color: #666;">Thank you for registering with our system. Your account has been successfully created.</p>
+                <div style="text-align: center; margin-top: 30px; padding: 20px; background: #f9f9f9;">
+                    <p style="color: #888; font-size: 12px;">Made with ❤️ by Gaurav Khatri</p>
+                    <a href="https://github.com/gauravkhatriweb" style="color: #0366d6; text-decoration: none;">Follow me on GitHub</a>
+                </div>
+            </div>
+            `
         );
 
         return res.status(201).json({
@@ -228,7 +238,19 @@ export const sendVerificationOtp = async (req, res) => {
         await sendEmail(
             user.email,
             'Account Verification OTP',
-            `Your verification OTP is ${otp}. This OTP will expire in ${OTP_EXPIRY_MINUTES} minutes.`
+            `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 5px;">
+                <h2 style="color: #333; text-align: center;">Account Verification OTP</h2>
+                <div style="text-align: center; padding: 20px; background: #f5f5f5; border-radius: 5px; margin: 20px 0;">
+                    <h3 style="color: #333; margin: 0;">Your OTP: <span style="color: #0366d6;">${otp}</span></h3>
+                    <p style="color: #666; margin-top: 10px;">This OTP will expire in ${OTP_EXPIRY_MINUTES} minutes</p>
+                </div>
+                <div style="text-align: center; margin-top: 30px; padding: 20px; background: #f9f9f9;">
+                    <p style="color: #888; font-size: 12px;">Made with ❤️ by Gaurav Khatri</p>
+                    <a href="https://github.com/gauravkhatriweb" style="color: #0366d6; text-decoration: none;">Follow me on GitHub</a>
+                </div>
+            </div>
+            `
         );
 
         return res.status(200).json({
@@ -367,7 +389,20 @@ export const sendRestPasswordOtp = async (req, res) => {
         await sendEmail(
             user.email,
             'Password Reset OTP',
-            `Your password reset OTP is ${otp}. This OTP will expire in ${OTP_EXPIRY_MINUTES} minutes.`
+            `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 5px;">
+                <h2 style="color: #333; text-align: center;">Password Reset OTP</h2>
+                <div style="text-align: center; padding: 20px; background: #f5f5f5; border-radius: 5px; margin: 20px 0;">
+                    <h3 style="color: #333; margin: 0;">Your OTP: <span style="color: #0366d6;">${otp}</span></h3>
+                    <p style="color: #666; margin-top: 10px;">This OTP will expire in ${OTP_EXPIRY_MINUTES} minutes</p>
+                </div>
+                <p style="color: #666;">If you didn't request this password reset, please ignore this email.</p>
+                <div style="text-align: center; margin-top: 30px; padding: 20px; background: #f9f9f9;">
+                    <p style="color: #888; font-size: 12px;">Made with ❤️ by Gaurav Khatri</p>
+                    <a href="https://github.com/gauravkhatriweb" style="color: #0366d6; text-decoration: none;">Follow me on GitHub</a>
+                </div>
+            </div>
+            `
         );
 
         return res.status(200).json({
