@@ -2,29 +2,55 @@ import React, { useContext, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { assets } from '../assets/assets'
 import { AppContext } from '../context/AppContext'
+import axios from 'axios'
+import { toast } from 'react-toastify';
 
 const Login = () => {
   const [mode, setMode] = useState('Sign Up') // "Sign Up" or "Login"
   const navigate = useNavigate()
-  const {backendUrl,setIsLoggedIn} = useContext(AppContext)
+  const {backendUrl,setIsLoggedIn, getUserData} = useContext(AppContext)
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [name, setName] = useState('')
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-
-    if (mode === 'Sign Up') {
-      // Handle sign-up logic
-      console.log('Sign Up:', { name, email, password })
-    } else {
-      // Handle login logic
-      console.log('Login:', { email, password })
+const handleSubmit = async (e) => {
+  try{
+  e.preventDefault()
+  axios.defaults.withCredentials = true
+  if(mode === 'Sign Up'){
+    const data = await axios.post(backendUrl + '/api/auth/register',{
+      name,
+      email,
+      password,
+    })
+    if(data.status === 200){
+      setIsLoggedIn(true)
+      getUserData()
+      navigate('/')
     }
-
-    // Add backend integration here
+    else{
+      toast.error(data.message)
+    }
+  }else{
+    const data = await axios.post(backendUrl + '/api/auth/login',{
+      email,
+      password,
+    })
+    if(data.status === 200){
+      setIsLoggedIn(true)
+      getUserData()
+      navigate('/')
+    }
+    else{
+      toast.error(data.message)
+    }
   }
+  }catch(err){
+    toast.error(err.response.data.message)    
+  }
+
+}
 
   return (
     <div className="flex items-center justify-center min-h-screen px-6 sm:px-0 bg-gradient-to-br from-blue-200 to-purple-400">

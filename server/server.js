@@ -15,10 +15,11 @@ const port = process.env.PORT || 4000;
 
 // Connect to MongoDB database
 connectDB(); 
+const allowedOrigins = ['http://localhost:5173'];
 
 // Middleware Setup
 app.use(express.json()); // Parse JSON request bodies
-app.use(cors({credentials: true})); // Enable CORS with credentials
+app.use(cors({credentials: true, origin: allowedOrigins})); // Enable CORS with credentials
 app.use(cookieParser()); // Parse Cookie header and populate req.cookies
 
 // Health check endpoint
