@@ -28,7 +28,7 @@ authRouter.post('/reset-password', resetPassword);
 // Protected routes (requires authentication)
 authRouter.post('/send-verification-otp', userAuth, sendVerificationOtp);
 authRouter.post('/verify-otp', userAuth, verifyOtp);
-authRouter.post('/is-authenticated', userAuth, isAuthenticated);
+authRouter.get('/is-auth', userAuth, isAuthenticated);
 
 export default authRouter;
 
